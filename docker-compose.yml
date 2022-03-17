@@ -20,6 +20,7 @@ services:
     tty: true
     volumes:
       - ./backend:/backend
+      - ./docker/backend/.aws:/root/.aws
     working_dir: "/backend"
     ports:
       - 3002:3000
