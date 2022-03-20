@@ -52,6 +52,19 @@ services:
       - dynamodb-local
     networks:
       - dynamodb-local-network
+  terraform:
+    build:
+      context: .
+      dockerfile: ./docker/terraform/Dockerfile
+    container_name: terraform
+    env_file:
+      - .env
+    volumes:
+      - ./terraform:/terraform
+    working_dir: /terraform
+    entrypoint: ash
+    tty: true
+
 
 volumes:
   dynamodb-local-data:
