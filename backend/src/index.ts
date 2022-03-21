@@ -1,15 +1,11 @@
-import express, { Application, Request, Response } from 'express'
+import express, { Application } from 'express'
 const app: Application = express();
 const port = 3000;
 
-app.get('/user', (_: Request, res: Response) => {
-  res.json([{
-    id: 1,
-    name: "Taro"
-  }, {
-    id: 2,
-    name: "Jiro"
-  }]);
-});
+const tasks = require('./apis/tasks'); // import 文に書き直したい（統一したい）
+
+app.use('/tasks', tasks);
+
+
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
