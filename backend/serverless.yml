@@ -47,3 +47,7 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
