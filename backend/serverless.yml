@@ -2,6 +2,10 @@ service: node-serverless-api
 
 frameworkVersion: "3"
 
+package:
+  patterns:
+    - dist/*
+
 provider:
   name: aws
   runtime: nodejs14.x
@@ -39,7 +43,7 @@ resources:
 
 functions:
   express:
-    handler: lambda.handler
+    handler: ./dist/lambda.handler
     events:
       - http:
           path: /
