@@ -1,19 +1,19 @@
 import express, { Router, Request, Response } from 'express'
 import AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
-const router: Router = express.Router();
+export const router: Router = express.Router();
 
 // TODO: jsonから設定ファイルロードするように修正する
-AWS.config.update({
-  region: "ap-northeast-1",
-  credentials: new AWS.SharedIniFileCredentials({
-    profile: "express"
-  })
-});
-const dynamodbOption = {
-  endpoint: "http://dynamodb-local:8000" // TODO: .env に切り出す
-}
-const ddbClient = new AWS.DynamoDB.DocumentClient(dynamodbOption);
+// AWS.config.update({
+//   region: "ap-northeast-1",
+//   credentials: new AWS.SharedIniFileCredentials({
+//     profile: "express"
+//   })
+// });
+// const dynamodbOption = {
+//   endpoint: "http://dynamodb-local:8000" // TODO: .env に切り出す
+// }
+const ddbClient = new AWS.DynamoDB.DocumentClient();
 const tableName = "Tasks";
 
 router.use(express.urlencoded({
@@ -22,7 +22,7 @@ router.use(express.urlencoded({
 router.use(express.json());
 
 // URI Prefix: /tasks
-module.exports = router
+router
   .get('/', (_: Request, res: Response) => {
     const params = {
       TableName: tableName
@@ -38,7 +38,7 @@ module.exports = router
     const postData = {
       "TableName": tableName,
       "Item": { // 自作のTask型を定義するとフロントとのやり取りがいい感じになりそう
-        "accessKey": nanoid(),
+        "id": nanoid(),
         "title": body.title,
         "content": body.content,
         "limit": body.limit,
@@ -57,7 +57,7 @@ module.exports = router
     const patchData = {
       TableName: tableName,
       Key: {
-        accessKey: taskKey
+        id: taskKey
       },
       UpdateExpression: 'set #title = :title, #content = :content, #state = :state, #limit = :limit',
       ExpressionAttributeNames : {
@@ -85,7 +85,7 @@ module.exports = router
     const patchData = {
       TableName: tableName,
       Key: {
-        accessKey: taskKey
+        id: taskKey
       }
     };
 
