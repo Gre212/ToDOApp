@@ -14,7 +14,7 @@ export const router: Router = express.Router();
 //   endpoint: "http://dynamodb-local:8000" // TODO: .env に切り出す
 // }
 const ddbClient = new AWS.DynamoDB.DocumentClient();
-const tableName = "Tasks";
+const tableName = "Tasks-dev";
 
 router.use(express.urlencoded({
   extended: true
