@@ -1,17 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { Box, CssBaseline } from '@mui/material';
+import Header from './components/common/Header';
+import Footer from './components/common/Footer';
+import TasksContainer from './components/tasks/Container';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <CssBaseline />
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "#fafafa" }}>
+      <Header />
+      <Box component="main" sx={{ flex: "1" }}>
+        <TasksContainer />
+      </Box>
+      <Footer />
+    </Box>
   </React.StrictMode>,
   document.getElementById('root')
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
