@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/axios';
 import { Task } from '../../@types/Task'; // 相対パスじゃないとエラーになる
 import TaskCard from './Card';
-import TaskModal from './Modal';
+import TaskCreateButton from './CreateButton';
 
 
 function TaskContainer() {
@@ -22,7 +22,7 @@ function TaskContainer() {
     const listItems = tasks.map((task) => {
       return (
         <Grid item xs={6} key={task.id}>
-          <TaskCard propTask={task} getTask={getTasks}/>
+          <TaskCard propTask={task} getTasks={getTasks}/>
           {/* <TaskModal propTask={task} /> */}
         </Grid>
       )
@@ -41,9 +41,10 @@ function TaskContainer() {
   }
 
   return (
-    <div className='Task-container'>
+    <>
       <CardList />
-    </div>
+      <TaskCreateButton getTasks={getTasks}/>
+    </>
   );
 }
 

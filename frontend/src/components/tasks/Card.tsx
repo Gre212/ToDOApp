@@ -5,7 +5,7 @@ import TaskModal from './Modal';
 
 type Props = {
   propTask: Task,
-  getTask: Function
+  getTasks: Function
 };
 
 function TaskCard(props: Props) {
@@ -34,7 +34,7 @@ function TaskCard(props: Props) {
         sx={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center"}}>
         {/* TODO: 関数を渡すことにWarningが出ているので推奨の書き方に直した方が良さそう */}
         {/* [ref のフォワーディング – React](https://ja.reactjs.org/docs/forwarding-refs.html) */}
-        <TaskModal propTask={props.propTask} handleClose={handleClose} getTask={props.getTask}/>
+        <TaskModal propTask={props.propTask} handleClose={handleClose} getTasks={props.getTasks}/>
       </Modal>
     </>
   );

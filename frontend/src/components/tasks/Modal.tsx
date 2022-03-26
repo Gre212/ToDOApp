@@ -6,7 +6,7 @@ import { Task } from '../../@types/Task'; // 相対パスじゃないとエラ�
 type Props = {
   propTask?: Task,
   handleClose: Function,
-  getTask: Function
+  getTasks: Function
 };
 
 function TaskModal({propTask = {
@@ -17,7 +17,7 @@ function TaskModal({propTask = {
       state: "",
     },
     handleClose,
-    getTask}: Props) {
+    getTasks}: Props) {
   const creation = propTask.id === null;
   const [task, setTask] = useState<Task>(propTask);
 
@@ -40,14 +40,14 @@ function TaskModal({propTask = {
       axios.patch(`/tasks/${task.id}`, task);
     }
     handleClose();
-    getTask();
+    getTasks();
   }
 
   function handleDelete(event: React.FormEvent<HTMLButtonElement>){
     event.preventDefault();
     axios.delete(`/tasks/${task.id}`);
     handleClose();
-    getTask();
+    getTasks();
   }
 
   return (
