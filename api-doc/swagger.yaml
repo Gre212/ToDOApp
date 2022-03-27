@@ -1,0 +1,138 @@
+swagger: "2.0"
+info:
+  description: "ToDo アプリケーション REST API ドキュメント"
+  version: "1.0.0"
+  title: "ToDo Rest API Docment"
+host: "af0czrklbb.execute-api.ap-northeast-3.amazonaws.com"
+basePath: "/v1"
+tags:
+- name: "task"
+  description: "タスク情報の取得・更新"
+schemes:
+- "https"
+paths:
+  /tasks:
+    get:
+      tags:
+      - "task"
+      summary: "タスクの取得"
+      description: "全てのタスク情報を取得します"
+      operationId: "getTasks"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Task"
+        "400":
+          description: "リクエストパラメータに過不足があります"
+    post:
+      tags:
+      - "task"
+      summary: "タスクの追加"
+      description: ""
+      operationId: "createTask"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: ""
+        required: true
+        schema:
+          type: "object"
+          properties:
+            title:
+              type: "string"
+            content:
+              type: "string"
+            limit:
+              type: "string"
+            state:
+              type: "string"
+              enum: 
+              - "new"
+              - "progress"
+              - "done"
+      responses:
+        "400":
+          description: "リクエストパラメータに誤りがあります"
+  /tasks/{id}:
+    put:
+      tags:
+      - "task"
+      summary: "タスクの更新"
+      description: ""
+      operationId: "updateTask"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "タスクの情報を全てボディに含めてください"
+        required: true
+        schema:
+          $ref: "#/definitions/Task"
+      responses:
+        "200":
+          description: "更新成功"
+        "400":
+          description: "リクエストパラメータに過不足があります"
+    delete:
+      tags:
+      - "task"
+      summary: "タスクの削除"
+      description: ""
+      operationId: "deleteTask"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "削除するタスクのID"
+        required: true
+        type: "string"
+      responses:
+        "400":
+          description: "タスクの削除に失敗"
+        "404":
+          description: "タスクが見つかりません"
+definitions:
+  Task:
+    type: "object"
+    required:
+    - "title"
+    - "content"
+    - "limit"
+    - "state"
+    properties:
+      id:
+        type: "string"
+        format: "21 symbols [A-Za-z0-9_-]"
+        description: "作成時に自動で割り振られます"
+        example: "9aiIoA_kMDIGa1ixG2ewG"
+      title:
+        type: "string"
+      content:
+        type: "string"
+      limit:
+        type: "string"
+        format: "YYYY-DD-MM"
+        description: "YYYY-MM-DD のフォーマットで返却されます"
+      state:
+        type: "string"
+        enum: 
+        - "new"
+        - "progress"
+        - "done"
