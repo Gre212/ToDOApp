@@ -23,15 +23,28 @@ router.use(express.json());
 
 // URI Prefix: /tasks
 router
-  .get('/', (_: Request, res: Response) => {
-    const params = {
-      TableName: tableName
-    }
-    ddbClient.scan(params, (err, data) => {
-      if (err) throw err; // AWSErrorなのでそのまま投げる
-      res.json(data);
-    });
+  .get('/', async (_: Request, res: Response) => {
+    // TODO: any型を卒業する
+    const fullScan: any = async (LastEvaluatedKey? : AWS.DynamoDB.DocumentClient.Key)=> {
+      const params = {
+        TableName: tableName,
+        ExclusiveStartKey: LastEvaluatedKey
+      }
 
+      const result = await ddbClient.scan(params).promise();
+
+      if(!result.Items) throw result;
+
+      if(result.LastEvaluatedKey){
+        const nextScanResult = await fullScan(result.LastEvaluatedKey);
+        return result.Items.concat(nextScanResult);
+      }else{
+        return result.Items;
+      }
+    }
+
+    const result = await fullScan();
+    res.json(result);
   })
   .post('/', (req: Request, res: Response) => {
     const body = req.body;
