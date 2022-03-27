@@ -11,6 +11,17 @@ app.use(cors({
   allowedHeaders: "'Content-Type,x-requested-with'"
 }));
 app.get('/', (_: Request, res: Response) => {
-  return res.json({"Updated": "Hello World!"});
+  return res.json({
+    "endpoints": {
+      "/tasks": {
+        "GET": "get tasks",
+        "POST": "create task"
+      },
+      "/tasks/{id}": {
+        "PATCH": "update task",
+        "DELETE": "delete task"
+      }
+    }
+  });
 });
 app.use('/tasks', tasks);
