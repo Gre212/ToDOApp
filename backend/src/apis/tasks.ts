@@ -6,16 +6,6 @@ import { check, validationResult } from 'express-validator';
 import { Task } from '../@types/Task';
 export const router: Router = express.Router();
 
-// TODO: jsonから設定ファイルロードするように修正する
-// AWS.config.update({
-//   region: "ap-northeast-1",
-//   credentials: new AWS.SharedIniFileCredentials({
-//     profile: "express"
-//   })
-// });
-// const dynamodbOption = {
-//   endpoint: "http://dynamodb-local:8000" // TODO: .env に切り出す
-// }
 const ddbClient = new AWS.DynamoDB.DocumentClient();
 const tableName = "Tasks-dev";
 
