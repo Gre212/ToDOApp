@@ -7,7 +7,7 @@ import { Task } from '../@types/Task';
 export const router: Router = express.Router();
 
 const ddbClient = new AWS.DynamoDB.DocumentClient();
-const tableName = "Tasks-dev";
+const tableName = process.env.DYNAMODB_TABLE ?? "";
 
 router.use(express.urlencoded({
   extended: true
