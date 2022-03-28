@@ -1,6 +1,9 @@
 import express, { Router, Request, Response } from 'express'
 import AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
+import { check, validationResult } from 'express-validator';
+
+import { Task } from '../@types/Task';
 export const router: Router = express.Router();
 
 // TODO: jsonから設定ファイルロードするように修正する
@@ -46,65 +49,112 @@ router
     const result = await fullScan();
     res.json(result);
   })
-  .post('/', (req: Request, res: Response) => {
-    const body = req.body;
-    const postData = {
-      "TableName": tableName,
-      "Item": { // 自作のTask型を定義するとフロントとのやり取りがいい感じになりそう
-        "id": nanoid(),
-        "title": body.title,
-        "content": body.content,
-        "limit": body.limit,
-        "state": body.state,
+  .post('/', [
+      check('id').isEmpty(),
+      check('title').not().isEmpty(),
+      check('content').not().isEmpty(),
+      check('limit').not().isEmpty(), // .matches('^\d{4}\-\d{2}\-\d{2}$')
+      check('state').isIn(["new", "progress", "done"])
+    ],
+    (req: Request, res: Response) => {
+      const body = req.body;
+
+      const errors = validationResult(req);
+      if(!errors.isEmpty()) {
+        res.status(400).json({errors: errors.array()});
+        return;
       }
-    };
 
-    ddbClient.put(postData, (err, data)=> {
-      if (err) throw err;
-      return res.json(data);
-    });
+      const task: Task = {
+          "id": nanoid(),
+          "title": body.title,
+          "content": body.content,
+          "limit": body.limit,
+          "state": body.state,
+        }
+      const postData = {
+        "TableName": tableName,
+        "Item": task
+      };
 
-  })
-  .patch('/:task_key', (req: Request, res: Response) => {
-    const taskKey = req.params.task_key;
-    const patchData = {
-      TableName: tableName,
-      Key: {
-        id: taskKey
-      },
-      UpdateExpression: 'set #title = :title, #content = :content, #state = :state, #limit = :limit',
-      ExpressionAttributeNames : {
-        '#title'   : 'title',
-        '#content' : 'content',
-        '#state'   : 'state',
-        '#limit'   : 'limit'
-      },
-      ExpressionAttributeValues : {
-        ':title'   : req.body.title,
-        ':content' : req.body.content,
-        ':state'   : req.body.state,
-        ':limit'   : req.body.limit
-      },
-      ReturnValues: 'UPDATED_NEW'
-    };
-
-    ddbClient.update(patchData, (err, data) => {
+      ddbClient.put(postData, (err, data)=> {
         if (err) throw err;
-      return res.json(data);
-    });
-  })
+        return res.json(data);
+      });
+    }
+  )
+  .patch('/:task_key', [
+      check('title').not().isEmpty(),
+      check('content').not().isEmpty(),
+      check('limit').not().isEmpty(), // .matches('^\d{4}\-\d{2}\-\d{2}$')
+      check('state').isIn(["new", "progress", "done"])
+    ],
+    (req: Request, res: Response) => {
+
+      const errors = validationResult(req);
+      if(!errors.isEmpty()) {
+        res.status(400).json({errors: errors.array()});
+        return;
+      }
+
+      const taskKey = req.params.task_key;
+      const patchData = {
+        TableName: tableName,
+        Key: {
+          id: taskKey
+        },
+        UpdateExpression: 'set #title = :title, #content = :content, #state = :state, #limit = :limit',
+        ExpressionAttributeNames : {
+          '#title'   : 'title',
+          '#content' : 'content',
+          '#state'   : 'state',
+          '#limit'   : 'limit'
+        },
+        ExpressionAttributeValues : {
+          ':title'   : req.body.title,
+          ':content' : req.body.content,
+          ':state'   : req.body.state,
+          ':limit'   : req.body.limit
+        },
+        ConditionExpression: 'attribute_exists(id)',
+        ReturnValues: 'UPDATED_NEW'
+      };
+
+      ddbClient.update(patchData, (err, data) => {
+        if (err) {
+          if(err.name == "ConditionalCheckFailedException"){
+            res.status(404).json({"Error": "Task not found."});
+            return;
+          }else{
+            throw err;
+          }
+        }
+        res.json(data);
+        return;
+      });
+    }
+  )
   .delete('/:task_key', (req: Request, res: Response) => {
     const taskKey = req.params.task_key;
     const patchData = {
       TableName: tableName,
       Key: {
         id: taskKey
-      }
+      },
+      ConditionExpression: 'attribute_exists(id)',
     };
 
     ddbClient.delete(patchData, (err, data) => {
-      if (err) throw err;
-      return res.json(data);
+      if (err) {
+        if(err.name == "ConditionalCheckFailedException"){
+          res.status(404).json({"Error": "Task not found."});
+          return;
+        }else{
+          throw err;
+        }
+      }
+      res.json(data);
+      return;
     });
   });
 
