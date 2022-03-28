@@ -56,12 +56,13 @@ router
       }
 
       const task: Task = {
-          "id": nanoid(),
-          "title": body.title,
-          "content": body.content,
-          "limit": body.limit,
-          "state": body.state,
-        }
+        "id": nanoid(),
+        "title": body.title,
+        "content": body.content,
+        "limit": body.limit,
+        "state": body.state,
+      }
+
       const postData = {
         "TableName": tableName,
         "Item": task
