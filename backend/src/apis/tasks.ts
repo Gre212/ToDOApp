@@ -53,7 +53,12 @@ router
       Limit: getLimit
     } as AWS.DynamoDB.DocumentClient.QueryInput;
     ddbClient.query(params, (err, data) => {
-      if(err) throw err;
+      if(err){
+        if(err.name == "ValidationException") {
+          res.status(400).json({"Invalid Request": "Request is invalid."});
+        }
+        throw err;
+      }
       if(titleQuery != ""){
         data.Items = data.Items?.filter((e) => e.Title.includes(titleQuery));
         data.Count = data.Items?.length;
