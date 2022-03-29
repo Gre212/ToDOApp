@@ -7,8 +7,13 @@ import moment from 'moment';
 import { Task } from '../@types/Task';
 export const router: Router = express.Router();
 
-const ddbClient = new AWS.DynamoDB.DocumentClient();
 const tableName = process.env.DYNAMODB_TABLE ?? "";
+
+const ddbClient = process.env.IS_OFFLINE?
+                  new AWS.DynamoDB.DocumentClient({
+                    endpoint: process.env.DYNAMODB_CUSTOM_ENDPOINT
+                  }) :
+                  new AWS.DynamoDB.DocumentClient() ;
 
 router.use(express.urlencoded({
   extended: true
