@@ -16,7 +16,7 @@ paths:
       tags:
       - "task"
       summary: "タスクの取得"
-      description: "全てのタスク情報を取得します"
+      description: "タスクの状態ごとに情報を取得します"
       operationId: "getTasks"
       produces:
       - "application/json"
