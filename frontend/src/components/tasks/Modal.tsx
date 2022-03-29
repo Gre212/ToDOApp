@@ -10,15 +10,16 @@ type Props = {
 };
 
 function TaskModal({propTask = {
-      id: null,
-      title: "",
-      content: "",
-      limit: "",
-      state: "",
+      Id: null,
+      Title: "",
+      Content: "",
+      Limit: "",
+      State: "",
+      CreatedAt: ""
     },
     handleClose,
     getTasks}: Props) {
-  const creation = propTask.id === null;
+  const creation = propTask.Id === null;
   const [task, setTask] = useState<Task>(propTask);
 
   function handleInputChange(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>){
@@ -37,7 +38,7 @@ function TaskModal({propTask = {
     if (creation) {
       axios.post('/tasks', task);
     } else {
-      axios.patch(`/tasks/${task.id}`, task);
+      axios.patch(`/tasks/${task.Id}`, task);
     }
     handleClose();
     getTasks();
@@ -45,7 +46,7 @@ function TaskModal({propTask = {
 
   function handleDelete(event: React.FormEvent<HTMLButtonElement>){
     event.preventDefault();
-    axios.delete(`/tasks/${task.id}`);
+    axios.delete(`/tasks/${task.Id}`);
     handleClose();
     getTasks();
   }
@@ -53,12 +54,12 @@ function TaskModal({propTask = {
   return (
     <form className='Task-modal' onSubmit={handleFormSubmit}>
       <Grid container spacing={2} sx={{ background:"white", p:"10px", borderRadius:"5px" }}>
-        <input type="hidden" name='id' value={task.id ?? ""}/>
+        <input type="hidden" name='id' value={task.Id ?? ""}/>
         <Grid item xs={12}>
           <TextField
-            name="title"
+            name="Title"
             type="text"
-            value={task.title}
+            value={task.Title}
             onChange={handleInputChange}
             label="タイトル"
             fullWidth
@@ -67,8 +68,8 @@ function TaskModal({propTask = {
 
         <Grid item xs={12}>
           <TextField
-            name="content"
-            value={task.content}
+            name="Content"
+            value={task.Content}
             onChange={handleInputChange}
             multiline
             fullWidth
@@ -77,9 +78,9 @@ function TaskModal({propTask = {
 
         <Grid item xs={4}>
           <TextField
-            name="limit"
+            name="Limit"
             type="date"
-            value={task.limit}
+            value={task.Limit}
             onChange={handleInputChange}
             />
         </Grid>
@@ -90,7 +91,7 @@ function TaskModal({propTask = {
             <Select
               id="state"
               labelId="state"
-              name="state"
+              name="State"
               label="着手状態"
               onChange={handleSelectChange}>
                 <MenuItem value="new">着手前</MenuItem>
@@ -101,9 +102,9 @@ function TaskModal({propTask = {
         </Grid>
 
         <Grid item xs={2}>
-          { task.id !== null &&
+          { task.Id !== null &&
             <Button
-              value={task.id}
+              value={task.Id}
               onClick={handleDelete}
               sx={{ width:"100%", height:"100%"}}>
               削除

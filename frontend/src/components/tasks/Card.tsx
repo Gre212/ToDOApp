@@ -18,10 +18,10 @@ function TaskCard(props: Props) {
       <Card className='Task-card'>
         <CardContent>
           <Typography component="div" sx={{ mb: 1.5 }}>
-            {props.propTask.title}
+            {props.propTask.Title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {props.propTask.content}
+            {props.propTask.Content}
           </Typography>
         </CardContent>
         <CardActions>
