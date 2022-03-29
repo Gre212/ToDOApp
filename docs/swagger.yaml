@@ -20,7 +20,6 @@ paths:
       operationId: "getTasks"
       produces:
       - "application/json"
-      # TODO: 受け付けるクエリパラメータを全部書く
       parameters:
       - name: "State"
         in: "query"
