@@ -30,10 +30,7 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 
 
-app.use(cors({
-  origin: "'*'",
-  allowedHeaders: "'Content-Type,x-requested-with'"
-}));
+app.use(cors());
 app.get('/', (_: Request, res: Response) => {
   return res.json({
     "endpoints": {
