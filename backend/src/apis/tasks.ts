@@ -2,6 +2,7 @@ import express, { Router, Request, Response } from 'express'
 import AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
 import { check, validationResult } from 'express-validator';
+import moment from 'moment';
 
 import { Task } from '../@types/Task';
 export const router: Router = express.Router();
@@ -16,28 +17,44 @@ router.use(express.json());
 
 // URI Prefix: /tasks
 router
-  .get('/', async (_: Request, res: Response) => {
-    // TODO: any型を卒業する
-    const fullScan: any = async (LastEvaluatedKey? : AWS.DynamoDB.DocumentClient.Key)=> {
-      const params = {
-        TableName: tableName,
-        ExclusiveStartKey: LastEvaluatedKey
+  .get('/', (req: Request, res: Response) => {
+    const state = req.query.state ?? "new";
+    const lastId = req.query.lastId;
+    const lastState = req.query.lastState;
+    const lastCreatedAt = req.query.lastCreatedAt;
+    const titleQuery = req.query.titleQuery ?? "";
+    const exclusiveStartKey =
+      lastId && lastState && lastCreatedAt ?
+      { "Id": lastId , "State": lastState, "CreatedAt": lastCreatedAt } as AWS.DynamoDB.DocumentClient.Key :
+      undefined;
+    const defaultGetLimit = 10;
+    const getLimit =
+      Number(req.query.limit) != NaN ?
+      Number(req.query.limit ?? defaultGetLimit) :
+      defaultGetLimit;
+
+    const params = {
+      TableName: tableName,
+      ExclusiveStartKey: exclusiveStartKey,
+      IndexName: "State_CreatedAt_index",
+      KeyConditionExpression: '#State = :state',
+      ExpressionAttributeNames: {
+        '#State': 'State'
+      },
+      ExpressionAttributeValues: {
+        ':state': state
+      },
+      ScanIndexForward: false,
+      Limit: getLimit
+    } as AWS.DynamoDB.DocumentClient.QueryInput;
+    ddbClient.query(params, (err, data) => {
+      if(err) throw err;
+      if(titleQuery != ""){
+        data.Items = data.Items?.filter((e) => e.Title.includes(titleQuery));
+        data.Count = data.Items?.length;
       }
-
-      const result = await ddbClient.scan(params).promise();
-
-      if(!result.Items) throw result;
-
-      if(result.LastEvaluatedKey){
-        const nextScanResult = await fullScan(result.LastEvaluatedKey);
-        return result.Items.concat(nextScanResult);
-      }else{
-        return result.Items;
-      }
-    }
-
-    const result = await fullScan();
-    res.json(result);
+      return res.json(data);
+    });
   })
   .post('/', [
       check('id').isEmpty(),
@@ -56,11 +73,12 @@ router
       }
 
       const task: Task = {
-        "id": nanoid(),
-        "title": body.title,
-        "content": body.content,
-        "limit": body.limit,
-        "state": body.state,
+        "Id": nanoid(),
+        "Title": body.title,
+        "Content": body.content,
+        "Limit": body.limit,
+        "State": body.state,
+        "CreatedAt": moment().format("YYYY-MM-DD_HH:mm:ss"),
       }
 
       const postData = {
@@ -92,14 +110,14 @@ router
       const patchData = {
         TableName: tableName,
         Key: {
-          id: taskKey
+          Id: taskKey,
         },
         UpdateExpression: 'set #title = :title, #content = :content, #state = :state, #limit = :limit',
         ExpressionAttributeNames : {
-          '#title'   : 'title',
-          '#content' : 'content',
-          '#state'   : 'state',
-          '#limit'   : 'limit'
+          '#title'   : 'Title',
+          '#content' : 'Content',
+          '#state'   : 'State',
+          '#limit'   : 'Limit'
         },
         ExpressionAttributeValues : {
           ':title'   : req.body.title,
@@ -107,7 +125,7 @@ router
           ':state'   : req.body.state,
           ':limit'   : req.body.limit
         },
-        ConditionExpression: 'attribute_exists(id)',
+        ConditionExpression: 'attribute_exists(Id)',
         ReturnValues: 'UPDATED_NEW'
       };
 
@@ -130,9 +148,9 @@ router
     const patchData = {
       TableName: tableName,
       Key: {
-        id: taskKey
+        Id: taskKey
       },
-      ConditionExpression: 'attribute_exists(id)',
+      ConditionExpression: 'attribute_exists(Id)',
     };
 
     ddbClient.delete(patchData, (err, data) => {
