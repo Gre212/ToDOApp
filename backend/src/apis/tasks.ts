@@ -23,7 +23,7 @@ router.use(express.json());
 // URI Prefix: /tasks
 router
   .get('/', (req: Request, res: Response) => {
-    const state = req.query.state ?? "new";
+    const state = req.query.State ?? "new";
     const lastId = req.query.lastId;
     const lastState = req.query.lastState;
     const lastCreatedAt = req.query.lastCreatedAt;
@@ -62,11 +62,11 @@ router
     });
   })
   .post('/', [
-      check('id').isEmpty(),
-      check('title').not().isEmpty(),
-      check('content').not().isEmpty(),
-      check('limit').not().isEmpty(), // .matches('^\d{4}\-\d{2}\-\d{2}$')
-      check('state').isIn(["new", "progress", "done"])
+      check('Id').isEmpty(),
+      check('Title').not().isEmpty(),
+      check('Content').not().isEmpty(),
+      check('Limit').not().isEmpty(), // .matches('^\d{4}\-\d{2}\-\d{2}$')
+      check('State').isIn(["new", "progress", "done"])
     ],
     (req: Request, res: Response) => {
       const body = req.body;
@@ -79,10 +79,10 @@ router
 
       const task: Task = {
         "Id": nanoid(),
-        "Title": body.title,
-        "Content": body.content,
-        "Limit": body.limit,
-        "State": body.state,
+        "Title": body.Title,
+        "Content": body.Content,
+        "Limit": body.Limit,
+        "State": body.State,
         "CreatedAt": moment().format("YYYY-MM-DD_HH:mm:ss"),
       }
 
@@ -98,10 +98,10 @@ router
     }
   )
   .patch('/:task_key', [
-      check('title').not().isEmpty(),
-      check('content').not().isEmpty(),
-      check('limit').not().isEmpty(), // .matches('^\d{4}\-\d{2}\-\d{2}$')
-      check('state').isIn(["new", "progress", "done"])
+      check('Title').not().isEmpty(),
+      check('Content').not().isEmpty(),
+      check('Limit').not().isEmpty(), // .matches('^\d{4}\-\d{2}\-\d{2}$')
+      check('State').isIn(["new", "progress", "done"])
     ],
     (req: Request, res: Response) => {
 
@@ -125,10 +125,10 @@ router
           '#limit'   : 'Limit'
         },
         ExpressionAttributeValues : {
-          ':title'   : req.body.title,
-          ':content' : req.body.content,
-          ':state'   : req.body.state,
-          ':limit'   : req.body.limit
+          ':title'   : req.body.Title,
+          ':content' : req.body.Content,
+          ':state'   : req.body.State,
+          ':limit'   : req.body.Limit
         },
         ConditionExpression: 'attribute_exists(Id)',
         ReturnValues: 'UPDATED_NEW'
