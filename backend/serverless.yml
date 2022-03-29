@@ -12,6 +12,9 @@ provider:
   runtime: nodejs14.x
   region: ap-northeast-3
   stage: ${opt:stage, 'dev'}
+  environment:
+    DYNAMODB_TABLE: ${env:DYNAMODB_TABLE}
+    SENTRY_DNS: ${env:SENTRY_DNS}
   iam:
     role:
       statements:
