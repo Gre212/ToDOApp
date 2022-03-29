@@ -20,15 +20,71 @@ paths:
       operationId: "getTasks"
       produces:
       - "application/json"
+      # TODO: 受け付けるクエリパラメータを全部書く
+      parameters:
+      - name: "State"
+        in: "query"
+        type: "string"
+        default: "new"
+        enum:
+        - "new"
+        - "progress"
+        - "done"
+        description: "タスクの状態"
+      - name: "lastState"
+        in: "query"
+        type: "string"
+        description: "ページングを行う際に2ページ目以降を取得するための情報。lastId, lastCreatedAt と3つ合わせてリクエストを送る必要がある"
+      - name: "lastId"
+        in: "query"
+        type: "string"
+        description: "ページングを行う際に2ページ目以降を取得するための情報。lastState, lastCreatedAt と3つ合わせてリクエストを送る必要がある"
+      - name: "lastCreatedAt"
+        in: "query"
+        type: "string"
+        description: "ページングを行う際に2ページ目以降を取得するための情報。lastState, lastId と3つ合わせてリクエストを送る必要がある"
+      - name: "titleQuery"
+        in: "query"
+        type: "string"
+        description: "タイトルの部分一致で検索を行う"
+      - name: "limit"
+        in: "query"
+        type: "number"
+        default: 10
+        description: "取得する最大件数を指定する。大きくしすぎるとレスポンスが返ってこないため注意が必要。"
+
       responses:
         "200":
           description: "successful operation"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Task"
+            type: "object"
+            properties:
+              Items:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Task"
+              Count:
+                type: "number"
+                example: 1
+              ScannedCount:
+                type: "number"
+                example: 1
+              LastEvaluatedKey:
+                type: "object"
+                properties:
+                  State:
+                    type: "string"
+                    example: "new"
+                  Id:
+                    type: "string"
+                    example: "9aiIoA_kMDIGa1ixG2ewG"
+                  CreatedAt:
+                    type: "string"
+                    example: "2022-03-29_13:12:38"
+
+
         "400":
-          description: "リクエストパラメータに過不足があります"
+          description: "リクエストパラメータが不正な値です"
     post:
       tags:
       - "task"
@@ -55,13 +111,17 @@ paths:
               type: "string"
             state:
               type: "string"
-              enum: 
+              enum:
               - "new"
               - "progress"
               - "done"
       responses:
+        "200":
+          description: "タスクの作成に成功。空のオブジェクト {} が返却されます"
         "400":
           description: "リクエストパラメータに誤りがあります"
+        "404":
+          description: "指定されたIDのタスクが見つかりません"
   /tasks/{id}:
     put:
       tags:
@@ -86,9 +146,11 @@ paths:
           $ref: "#/definitions/Task"
       responses:
         "200":
-          description: "更新成功"
+          description: "更新成功。更新したデータが返却されます"
         "400":
-          description: "リクエストパラメータに過不足があります"
+          description: "リクエストパラメータに誤りがあります"
+        "404":
+          description: "指定されたIDのタスクが見つかりません"
     delete:
       tags:
       - "task"
@@ -104,35 +166,35 @@ paths:
         required: true
         type: "string"
       responses:
-        "400":
-          description: "タスクの削除に失敗"
         "404":
-          description: "タスクが見つかりません"
+          description: "指定されたIDのタスクが見つかりません"
 definitions:
   Task:
     type: "object"
     required:
-    - "title"
-    - "content"
-    - "limit"
-    - "state"
+    - "Title"
+    - "Content"
+    - "Limit"
+    - "State"
     properties:
-      id:
+      Id:
         type: "string"
         format: "21 symbols [A-Za-z0-9_-]"
         description: "作成時に自動で割り振られます"
         example: "9aiIoA_kMDIGa1ixG2ewG"
-      title:
+      Title:
         type: "string"
-      content:
+      Content:
         type: "string"
-      limit:
+      Limit:
         type: "string"
         format: "YYYY-DD-MM"
-        description: "YYYY-MM-DD のフォーマットで返却されます"
-      state:
+      State:
         type: "string"
-        enum: 
+        enum:
         - "new"
         - "progress"
         - "done"
+      CreatedAt:
+        type: "string"
+        format: "YYYY-MM-DD_HH:mm:ss"
