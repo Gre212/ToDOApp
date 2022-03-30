@@ -15,6 +15,9 @@
 * NodeJS: v14.x
 * npm: 8.6.x
 
+## APIリファレンス
+[Todo API - Swagger UI](https://gre212.github.io/ToDO/dist/)
+
 ## バックエンド
 
 ### 開発方法
@@ -78,3 +81,6 @@ $ npm start
 
 Vercelにリポジトリを登録済みのため、  
 masterにpushすることでデプロイが走る
+
+## 設計のログ
+[surabowさんのスクラップ一覧 | Zenn](https://zenn.dev/surabow?tab=scraps)
