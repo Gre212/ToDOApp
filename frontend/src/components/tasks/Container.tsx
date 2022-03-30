@@ -14,7 +14,7 @@ function TaskContainer() {
   const [query, setQuery] = useState("");
 
   // throttle させることで、inputフィールドのタイプの度にリクエストが飛ぶのを防ぐ
-  const [throttledGetTasks, isReady] = useThrottle(getTasks, 1000);
+  const [throttledGetTasks] = useThrottle(getTasks, 1000);
 
   useEffect(()=>{
     throttledGetTasks();
@@ -31,7 +31,7 @@ function TaskContainer() {
   }
 
   async function getMoreTasks() {
-    if(lastKey == undefined) return;
+    if(lastKey === undefined) return;
     const response = await axios.get("/tasks", {
       "params": {
           "State": state,
@@ -70,7 +70,7 @@ function TaskContainer() {
         sx={{ mt:"8px" }}
         >
         {listItems}
-        { (lastKey != undefined && lastKey.Id != "") &&
+        { (lastKey !== undefined && lastKey.Id !== "") &&
           <Grid item xs={6}>
             <Button onClick={getMoreTasks}>もっと読み込む</Button>
           </Grid>

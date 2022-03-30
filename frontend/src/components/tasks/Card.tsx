@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardActions, Button, Typography, Modal } from '@mui/material';
 import { Task } from '../../@types/Task'; // 相対パスじゃないとエラーになる
 import TaskModal from './Modal';

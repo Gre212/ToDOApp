@@ -1,4 +1,4 @@
-import { Modal, Box, FormControl, Select, InputLabel, TextField, SelectChangeEvent, Button, MenuItem, Grid } from '@mui/material';
+import { FormControl, Select, InputLabel, TextField, SelectChangeEvent, Button, MenuItem, Grid } from '@mui/material';
 import React, { useState } from 'react';
 import axios from 'utils/axios';
 import { Task } from '../../@types/Task'; // 相対パスじゃないとエラーになる
@@ -102,7 +102,7 @@ function TaskModal({propTask = {
         </Grid>
 
         <Grid item xs={2}>
-          { task.Id !== null &&
+          { task.Id != null &&
             <Button
               value={task.Id}
               onClick={handleDelete}
