@@ -3,7 +3,7 @@ info:
   description: "ToDo アプリケーション REST API ドキュメント"
   version: "1.0.0"
   title: "ToDo Rest API Docment"
-host: "af0czrklbb.execute-api.ap-northeast-3.amazonaws.com"
+host: "o7jlruogyf.execute-api.ap-northeast-3.amazonaws.com"
 basePath: "/v1"
 tags:
 - name: "task"
