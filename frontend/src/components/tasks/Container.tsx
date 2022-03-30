@@ -17,6 +17,9 @@ function TaskContainer() {
   const [throttledGetTasks] = useThrottle(getTasks, 1000);
 
   useEffect(()=>{
+    // TODO: 下記 Warningが出るが、useEffect の dependency に
+    // 　　　　throttledGetTasks を追加すると、無限にリクエストが飛んでしまうため調整が必要。
+    // WARNING: React Hook useEffect has a missing dependency: 'throttledGetTasks'.
     throttledGetTasks();
   }, [state, query]);
   async function getTasks() {
