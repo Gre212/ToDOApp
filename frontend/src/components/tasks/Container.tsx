@@ -25,7 +25,8 @@ function TaskContainer() {
   async function getTasks() {
     const response = await axios.get("/tasks", {
       "params": {
-          "State": state
+          "State": state,
+          "titleQuery": query
         }
     });
     console.log(response.data.Items);
