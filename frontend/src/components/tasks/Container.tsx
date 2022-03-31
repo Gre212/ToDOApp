@@ -14,7 +14,7 @@ function TaskContainer() {
   const [query, setQuery] = useState("");
 
   // throttle させることで、inputフィールドのタイプの度にリクエストが飛ぶのを防ぐ
-  const [throttledGetTasks] = useThrottle(getTasks, 1000);
+  const [throttledGetTasks] = useThrottle(getTasks, 300);
 
   useEffect(()=>{
     // TODO: 下記 Warningが出るが、useEffect の dependency に
