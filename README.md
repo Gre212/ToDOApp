@@ -32,7 +32,7 @@ $ vi .env.dev #必要な情報を入力する
 
 ```bash
 $ npx sls dynamodb install
-$ npm offline-start
+$ npm run offline-start
 
 ...
 
